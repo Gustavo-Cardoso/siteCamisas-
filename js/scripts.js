@@ -14,7 +14,7 @@ var camisetas = {
                 'foto': 'v-white-personalized.jpg' 
             }
         },
-        
+
         'gola_normal': {
             'sem_estampa': {
                 'preco_unit': 4.99,
@@ -26,7 +26,7 @@ var camisetas = {
             }
         }
     },
-    
+
     'colorida': {
         'gola_v': {
             'sem_estampa': {
@@ -38,7 +38,7 @@ var camisetas = {
                 'foto': 'v-color-personalized.png' 
             }
         },
-        
+
         'gola_normal': {
             'sem_estampa': {
                 'preco_unit': 5.35,
@@ -84,16 +84,95 @@ var parametros_pesquisa = {
 
 $(function(){
 
-    function  atualizarOrcamento(parametros_pesquisa){}
+    function  atualizarOrcamento(parametros){
+
+        $(".refresh-loader").show();
+
+        var quantidade = parametros.quantidade;
+        var preco_unit = camisetas[parametros.cor][parametros.gola][parametros.estampa].preco_unit;
+        var foto = "img/" + camisetas[parametros.cor][parametros.gola][parametros.estampa].foto;
+
+        var valorTotal = quantidade * preco_unit;
+
+        if (parametros.qualidade == "q190"){
+            valorTotal *= 1.12;
+        }
+
+        if (parametros.embalagem == "unitaria"){
+            valorTotal += (quantidade * 0.15);
+        }
+
+        if (quantidade >= 1000){
+            valorTotal *= 0.85; 
+        } else if (quantidade >= 500) {
+            valorTotal *= 0.90;
+        } else if (quantidade >= 100) {
+            valorTotal *= 0.95;
+        }
+
+        window.setTimeout(function(){
+
+            var idGola = "#" + parametros.gola;
+            $("#result_gola").html($(idGola).html());
+
+            var idEstampa = "option[value='" + parametros.estampa + "']";
+            $("#result_estampa").html($(idEstampa).html());
+
+            var idEmbalagem = "option[value='" + parametros.embalagem + "']";
+            $("#result_embalagem").html($(idEmbalagem).html());
+
+            var idCor = "#" + parametros.cor;
+            $("#result_cor").html($(idCor).html());
+
+            var idQualidade = "#" + parametros.qualidade;
+            $("#result_qualidade").html($(idQualidade).html());
+
+            $("#result_quantidade").html(parametros.quantidade);
+
+            $("#valor-total").html(valorTotal.toLocaleString('pt-br', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+
+            $("#foto-produto").attr("src", foto);
+
+
+            $(".refresh-loader").hide();
+
+        }, 500 )
+    }
+
+    $(".option-filter div").click(function(){
+
+        $(this).parent().children("div").removeClass("selected");
+        $(this).addClass("selected");
+
+        var categoria = $(this).parent().attr('id');
+        parametros_pesquisa[categoria] = $(this).attr('id');
+
+        atualizarOrcamento(parametros_pesquisa)
+    });
+
+    $("select").change(function(){
+
+        var paramentroSelect = $(this).attr('id');
+        parametros_pesquisa[paramentroSelect] = $(this).val();
+        atualizarOrcamento(parametros_pesquisa);
+
+    });
+
+    $('#quantidade').change(function(){
+
+        var paramentroInput = $(this).attr('id');
+        parametros_pesquisa[paramentroInput] = $(this).val();
+        atualizarOrcamento(parametros_pesquisa);
+
+    });
+
+
+    atualizarOrcamento(parametros_pesquisa)
+
+
+
 
 });
-
-
-
-
-
-
-
 
 
 
